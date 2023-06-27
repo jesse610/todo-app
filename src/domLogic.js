@@ -2,24 +2,85 @@
 import { projects, currentActiveProject, setProject, createTodoItem, createProject, removeProject } from "./applicationLogic";
 import './style.css'
 
+// const displayProjects = () => {
+//     let projectUl = document.querySelector('.project-items')
+//     const h2 = document.querySelector('.task-container > div > h2')
+//     projectUl.textContent = ''
+//     for(const names in projects) {
+//         let li = document.createElement('li')
+//         let a = document.createElement('a')
+//         a.setAttribute('href', '#')
+//         li.append(a)
+//         a.setAttribute('class', 'project')
+//         // works but maybe not the best
+//         a.addEventListener('click', function() {
+//             setProject(a.textContent)
+//             displayTasks()
+//             updateTaskHeading()
+//             hideAddTaskButton(false)
+//             hideAddTaskForm(true)
+//         })
+//         a.textContent = names
+//         projectUl.appendChild(li)
+//         displayRemoveProjectBtns()
+//     }
+// }
+
 const displayProjects = () => {
     let projectUl = document.querySelector('.project-items')
+    const h2 = document.querySelector('.task-container > div > h2')
     projectUl.textContent = ''
-    for(const names in projects) {
-        let li = document.createElement('li')
-        let a = document.createElement('a')
-        a.setAttribute('href', '#')
-        li.append(a)
-        a.setAttribute('class', 'project')
-        // works but maybe not the best
-        a.addEventListener('click', function() {
-            setProject(a.textContent)
-            displayTasks()
-        })
-        a.textContent = names
+
+    for (const names in projects) {
+        let li = createProjectListItem(names)
         projectUl.appendChild(li)
-        displayRemoveProjectBtns()
     }
+    displayRemoveProjectBtns()
+}
+
+const createProjectListItem = (name) => {
+    let li = document.createElement('li');
+    let a = createProjectLink(name);
+    li.appendChild(a)
+    return li
+}
+
+const createProjectLink = (name) => {
+    let a = document.createElement('a')
+    a.setAttribute('href', '#')
+    a.setAttribute('class', 'project')
+    a.textContent = name
+    a.addEventListener('click', () => {
+        handleProjectLinkClick(a.textContent)
+    })
+    return a
+}
+
+const handleProjectLinkClick = (projectName) => {
+    setProject(projectName)
+    displayTasks()
+    updateTaskHeading()
+    hideAddTaskButton(false)
+    hideAddTaskForm(true)
+}
+
+const hideAddTaskButton = (tf) => {
+    const addTaskBtn = document.querySelector('#add-task-btn')
+    addTaskBtn.hidden = tf
+}
+
+const hideAddTaskForm = (tf) => {
+    const form = document.querySelector('#task-form')
+
+    if(form != null && tf == true)
+    {
+        form.remove()
+    }
+}
+
+const updateTaskHeading = () => {
+    const h2 = document.querySelector('.task-container > div > h2')
+    h2.textContent =  `Tasks: ${currentActiveProject}`
 }
 
 const displayTasks = () => {
@@ -45,7 +106,7 @@ const displayTaskForm = () => {
     const addTaskBtn = document.querySelector('#add-task-btn')
     addTaskBtn.addEventListener('click', function() {
         createTaskForm()
-        addTaskBtn.hidden = true
+        hideAddTaskButton(true)
     })
 }
 
@@ -111,6 +172,7 @@ const createTaskForm = () => {
     option4.textContent = 'High'
     select.appendChild(option4)
 
+
     // creates submit button
     const submitBtn = document.createElement('button')
     submitBtn.type = 'submit'
@@ -137,6 +199,8 @@ const onTaskFormSubmit = (e) => {
         createTodoItem(title.value, desc.value, deadline.value, priority.value)
         displayTasks()
         resetForm()
+        hideAddTaskButton(false)
+        hideAddTaskForm(true)
         console.log(projects)
     }
 }
@@ -183,12 +247,13 @@ const resetForm = () => {
 
 const addProject = () => {
     const addProjectBtn = document.querySelector('#add-project-btn')
-    addProjectBtn.addEventListener('click', function() {
+    addProjectBtn.addEventListener('click', function(e) {
         const projectInputs = document.querySelectorAll('#project-name-input')
         
         if (projectInputs.length == 0)
         {
             displayProjectForm()
+            e.stopPropagation()
         }
     })
 }
@@ -212,7 +277,19 @@ const displayProjectForm = () => {
     form.addEventListener('submit', function(e) {
         onProjectSubmit(e)
     })
+
     taskItemsUI.appendChild(form)
+    input.focus()
+
+    // removes input if not clicked on 
+    const inputField = document.querySelector('#project-name-input')
+
+    document.addEventListener('click', function(event) {
+        if (!form.contains(event.target) && event.target !== inputField) {
+            inputField.remove()
+            form.remove()
+        }
+    })
 }
 
 const onProjectSubmit = (e) => {
@@ -235,18 +312,6 @@ const onProjectSubmit = (e) => {
     }
 }
 
-const clickOutsideProjectForm = () => {
-    const form = document.querySelector('#project-name-form')
-    const inputField = document.querySelector('#project-name-input')
-
-    document.addEventListener('click', function(event) {
-        if (!form.contains(event.target) && event.target !== inputField) {
-            inputField.remove()
-            form.remove()
-        }
-    })
-}
-
 // displays error message for new projects that are made
 const projectLogger = (text) => {
     const errorMessage = document.querySelector('#error-message')
@@ -261,17 +326,26 @@ const displayRemoveProjectBtns = () => {
     const displayedProjects = document.querySelectorAll('.project-items > li')
     displayedProjects.forEach(project => {
         console.log(project.textContent)
-        if (project.textContent != 'DEFAULT' && project.querySelector('button') == null)
+        if (project.textContent != 'DEFAULT' && project.querySelector('button') === null)
         {
-            let deleteBtn = document.createElement('button')
-            deleteBtn.textContent = 'Remove'
-            deleteBtn.type = 'button'
-            project.appendChild(deleteBtn)
-            deleteBtn.addEventListener('click', function() {
-                deleteProject(project)
-            })
+            addRemoveProjectBtn(project)
         }
     })
+}
+
+const addRemoveProjectBtn = (project) => {
+    let deleteBtn = createRemoveProjectBtn()
+    project.appendChild(deleteBtn)
+    deleteBtn.addEventListener('click', () => {
+        deleteProject(project)
+    })
+}
+
+const createRemoveProjectBtn = (project) => {
+    let deleteBtn = document.createElement('button')
+    deleteBtn.textContent = 'Remove'
+    deleteBtn.type = 'button'
+    return deleteBtn
 }
 
 const deleteProject = (project) => {
@@ -280,6 +354,7 @@ const deleteProject = (project) => {
     console.log(projects)
     displayProjects()
     displayTasks()
+    updateTaskHeading()
 }
 
 export {

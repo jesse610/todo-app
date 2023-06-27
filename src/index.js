@@ -2,8 +2,6 @@ import { createTodoItem, createProject, projects, setProject, removeProject, rem
 import { displayProjects, displayTasks, displayTaskForm, addProject, displayRemoveProjectBtns } from "./domLogic";
 import './style.css'
 
-createProject('test 2')
-
 displayProjects()
 displayTasks()
 displayTaskForm()
