@@ -172,6 +172,12 @@ const createTaskForm = () => {
     option4.textContent = 'High'
     select.appendChild(option4)
 
+    // creates cancel button
+    const cancelBtn = document.createElement('button')
+    cancelBtn.type = 'button'
+    cancelBtn.textContent = 'Cancel'
+    cancelBtn.addEventListener('click', cancelTodo)
+    form.appendChild(cancelBtn)
 
     // creates submit button
     const submitBtn = document.createElement('button')
@@ -183,6 +189,12 @@ const createTaskForm = () => {
     // appends form to container
     const container = document.querySelector('.form-container')
     container.appendChild(form)
+}
+
+// cancels todo item
+const cancelTodo = () => {
+    hideAddTaskButton(false)
+    hideAddTaskForm(true)
 }
 
 // creates todo item
@@ -355,6 +367,8 @@ const deleteProject = (project) => {
     displayProjects()
     displayTasks()
     updateTaskHeading()
+    hideAddTaskForm(true)
+    hideAddTaskButton(false)
 }
 
 export {
