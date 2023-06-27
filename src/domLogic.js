@@ -1,30 +1,6 @@
 
-import { projects, currentActiveProject, setProject, createTodoItem, createProject, removeProject } from "./applicationLogic";
+import { projects, currentActiveProject, setProject, createTodoItem, createProject, removeProject, markTodoItemComplete, markTodoItemNotComplete } from "./applicationLogic";
 import './style.css'
-
-// const displayProjects = () => {
-//     let projectUl = document.querySelector('.project-items')
-//     const h2 = document.querySelector('.task-container > div > h2')
-//     projectUl.textContent = ''
-//     for(const names in projects) {
-//         let li = document.createElement('li')
-//         let a = document.createElement('a')
-//         a.setAttribute('href', '#')
-//         li.append(a)
-//         a.setAttribute('class', 'project')
-//         // works but maybe not the best
-//         a.addEventListener('click', function() {
-//             setProject(a.textContent)
-//             displayTasks()
-//             updateTaskHeading()
-//             hideAddTaskButton(false)
-//             hideAddTaskForm(true)
-//         })
-//         a.textContent = names
-//         projectUl.appendChild(li)
-//         displayRemoveProjectBtns()
-//     }
-// }
 
 const displayProjects = () => {
     let projectUl = document.querySelector('.project-items')
@@ -87,21 +63,77 @@ const displayTasks = () => {
     const projectTodos = projects[currentActiveProject]
     const taskItemsUl = document.querySelector('.task-items')
     taskItemsUl.textContent = ''
-   
-    for(let i = 0; i < projectTodos.length; i++) 
+    console.log(projectTodos)
+    
+    for (const i in projectTodos)
     {
-        let li = document.createElement('li')
-        for (const values in projectTodos[i])
-        {
-            let span = document.createElement('span')
-            span.textContent = projectTodos[i][values]
-            li.appendChild(span)
-        }
+        let li = createLiTodoItem(projectTodos[i])
         taskItemsUl.appendChild(li)
     }
 }
 
-// working on this 
+
+const createLiTodoItem = (todoItem) => {
+    let li = document.createElement('li')
+    for (const keys in todoItem)
+    {  
+        if(keys == 'completed')
+        {
+            let checkbox = createTodoCheckbox(todoItem)
+            li.appendChild(checkbox)
+        }
+        else
+        {
+            let span = createTodoSpan(todoItem[keys])
+            li.appendChild(span)
+        }
+    }
+    return li
+}
+
+const createTodoCheckbox = (todoItem) => {
+    let checkbox = document.createElement('input')
+    checkbox.type = 'checkbox'
+    checkbox.addEventListener('change', () => {
+        console.log(todoItem)
+        updateCompleteStatus(todoItem)
+        console.log(projects)
+    })
+    updateCheckboxDisplay(todoItem, checkbox)
+
+    return checkbox
+}
+
+const updateCompleteStatus = (todoItem) => {
+    let todoItemValue = todoItem.completed
+    console.log(todoItemValue)
+    if (todoItemValue != true)
+    {
+        return markTodoItemComplete(todoItem)
+    }
+    else
+    {
+        return markTodoItemNotComplete(todoItem)
+    }
+}
+
+const updateCheckboxDisplay = (todoItem, checkbox) => {
+    if (todoItem.completed == true)
+    {
+        checkbox.checked = true
+    }
+    else
+    {
+        checkbox.checked = false
+    }
+}
+
+const createTodoSpan = (todoItemValue) => {
+    let span = document.createElement('span')
+    span.textContent = todoItemValue
+    return span
+}
+
 const displayTaskForm = () => {
     const addTaskBtn = document.querySelector('#add-task-btn')
     addTaskBtn.addEventListener('click', function() {
