@@ -1,0 +1,21 @@
+*, *:before, *:after {
+    box-sizing: border-box;
+}
+
+body {
+    height: 80vh;
+}
+
+.main {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    height: 100%;
+}
+
+.sidebar {
+    border: 1px dotted red;
+}
+
+.error {
+    border: 1px solid red;
+}
