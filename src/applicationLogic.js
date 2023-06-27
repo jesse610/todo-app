@@ -9,6 +9,7 @@ const projects = {
 
 // todo factory function
 function TodoItem (title, description, dueDate, priority) {
+        this.completed = false
         this.title = title
         this.description = description
         this.dueDate = dueDate
@@ -28,6 +29,16 @@ const createProject = (projectName) => {
         projects[projectName] = []
         return projects
     }
+}
+
+const markTodoItemComplete = (todoItem) => {
+    todoItem.completed = true
+    return todoItem
+}
+
+const markTodoItemNotComplete = (todoItem) => {
+    todoItem.completed = false
+    return todoItem
 }
 
 // changes text to uppercase
@@ -200,5 +211,7 @@ export {
     editDescription,
     editPriority,
     editProjectName, 
-    currentActiveProject
+    currentActiveProject,
+    markTodoItemComplete,
+    markTodoItemNotComplete
 }
