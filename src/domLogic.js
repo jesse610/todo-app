@@ -1,5 +1,5 @@
 
-import { projects, currentActiveProject, setProject, createTodoItem, createProject, removeProject, markTodoItemComplete, markTodoItemNotComplete } from "./applicationLogic";
+import { projects, currentActiveProject, setProject, createTodoItem, createProject, removeProject, markTodoItemComplete, markTodoItemNotComplete, formatDate } from "./applicationLogic";
 import './style.css'
 
 const displayProjects = () => {
@@ -239,8 +239,9 @@ const onTaskFormSubmit = (e) => {
 
     let formErrors = checkFormValues(title, desc, deadline, priority)
     if (!formErrors)
-    {
-        createTodoItem(title.value, desc.value, deadline.value, priority.value)
+    {   
+        const formattedDate = formatDate(deadline.value)
+        createTodoItem(title.value, desc.value, formattedDate, priority.value)
         displayTasks()
         resetForm()
         hideAddTaskButton(false)
