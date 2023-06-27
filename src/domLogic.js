@@ -341,7 +341,7 @@ const addRemoveProjectBtn = (project) => {
     })
 }
 
-const createRemoveProjectBtn = (project) => {
+const createRemoveProjectBtn = () => {
     let deleteBtn = document.createElement('button')
     deleteBtn.textContent = 'Remove'
     deleteBtn.type = 'button'
