@@ -1,5 +1,6 @@
 import { projectLogger } from "./domLogic"
-
+import format from "date-fns/format"
+import { utcToZonedTime, zonedTimeToUtc } from "date-fns-tz";
 
 let currentActiveProject = 'DEFAULT'
 
@@ -12,8 +13,20 @@ function TodoItem (title, description, dueDate, priority) {
         this.completed = false
         this.title = title
         this.description = description
-        this.dueDate = dueDate
+        this.dueDate = format(new Date(`${dueDate}`), 'MM/dd/yyyy')
         this.priority = priority
+}
+
+// formats date
+const formatDate = (dateValue) => {
+    const selectedDate = new Date(`${dateValue}T00:00:00`)
+    const timeZone = 'America/Los_Angeles'
+
+    const utcDate = zonedTimeToUtc(selectedDate, timeZone)
+    const losAngelesDate = utcToZonedTime(utcDate, timeZone)
+    const formattedDate = format(losAngelesDate, "yyyy-MM-dd HH:mm:ss", { timeZone: timeZone })
+
+    return formattedDate
 }
 
 // creates new project array
@@ -199,6 +212,13 @@ const editProjectName = (oldProjectName, newProjectName) => {
     }
 }
 
+const sortTodos = (timeFrame) => {
+    if (timeFrame == 'today')
+    {
+        
+    }
+}
+
 export {
     projects,
     removeProject,
@@ -213,5 +233,6 @@ export {
     editProjectName, 
     currentActiveProject,
     markTodoItemComplete,
-    markTodoItemNotComplete
+    markTodoItemNotComplete,
+    formatDate
 }
