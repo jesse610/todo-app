@@ -1,6 +1,8 @@
 
-import { projects, currentActiveProject, setProject, createTodoItem, createProject, removeProject, markTodoItemComplete, markTodoItemNotComplete, formatDate } from "./applicationLogic";
+import { projects, currentActiveProject, setProject, createTodoItem, createProject, removeProject, markTodoItemComplete, markTodoItemNotComplete, formatDate, editTitle, editDescription, editDueDate, editPriority } from "./applicationLogic";
+import format from "date-fns/format";
 import './style.css'
+import { parse, parseISO } from "date-fns";
 
 const displayProjects = () => {
     let projectUl = document.querySelector('.project-items')
@@ -146,7 +148,9 @@ const createEditBtn = (todoItem) => {
     const editBtn = document.createElement('button')
     editBtn.type = 'button'
     editBtn.textContent = 'edit'
-    editBtn.addEventListener('click', populateEditForm)
+    editBtn.addEventListener('click', () => {
+        populateEditForm(todoItem)
+    })
     return editBtn
 }
 
@@ -158,8 +162,110 @@ const createDeleteBtn = (todoItem) => {
     return deleteBtn
 }
 
-const populateEditForm = () => {
+const populateEditForm = (todoItem) => {
+    const updateForm = createUpdateForm(todoItem)
+}
 
+const createUpdateForm = (todoItem) => {
+    const form = document.createElement('form')
+    form.action = '#'
+    form.id = 'update-form'
+    
+    // updates title input
+    const title = document.createElement('input')
+    title.type = 'text'
+    title.name = 'title'
+    title.autocomplete = "off"
+    title.id = 'title-update'
+    title.value = todoItem.title
+    form.appendChild(title)
+
+    // updates description input
+    const desc = document.createElement('input')
+    desc.type = 'text'
+    desc.name = 'description'
+    desc.autocomplete = "off"
+    desc.id = 'description-update'
+    desc.value = todoItem.description
+    form.appendChild(desc)
+
+    // updates date input
+    const date = document.createElement('input')
+    date.type = 'date'
+    date.name = 'deadline'
+    date.id = 'deadline-update'
+    const day = todoItem.dueDate
+    const parsedDate = parse(day, 'MM/dd/yyyy', new Date())
+    const formattedDate = format(parsedDate, "yyyy-MM-dd")
+    date.value = formattedDate
+    form.appendChild(date)
+
+    // creates select 
+    const select = document.createElement('select')
+    select.name = 'priority'
+    select.id = 'priority-update'
+    console.log(select)
+    form.appendChild(select)
+
+    // creates disabled option
+    const option1 = document.createElement('option')
+    option1.disabled = true
+    option1.textContent = 'Choose priority'
+    option1.id = 'default'
+    select.appendChild(option1)
+
+    // creates low option
+    const option2 = document.createElement('option')
+    option2.value = 'low'
+    option2.textContent = 'Low'
+    select.appendChild(option2)
+
+    // creates medium option
+    const option3 = document.createElement('option')
+    option3.value = 'medium'
+    option3.textContent = 'Medium'
+    select.appendChild(option3)
+
+    // creates medium option
+    const option4 = document.createElement('option')
+    option4.value = 'high'
+    option4.textContent = 'High'
+    select.appendChild(option4)
+
+    select.value = todoItem.priority.toLowerCase()
+    // creates cancel button
+    const cancelBtn = document.createElement('button')
+    cancelBtn.id = 'cancel-btn'
+    cancelBtn.type = 'button'
+    cancelBtn.textContent = 'Cancel'
+    cancelBtn.addEventListener('click', () => {
+        document.querySelector('#update-form').remove()
+    })
+    form.appendChild(cancelBtn)
+
+    // creates submit button
+    const updateBtn = document.createElement('button')
+    updateBtn.id = 'update-btn'
+    updateBtn.type = 'submit'
+    updateBtn.textContent = 'Update task'
+    updateBtn.addEventListener('click', (e) => {
+        e.preventDefault()
+        onUpdateFormSubmit(title, desc, date, select, todoItem)
+    })
+    form.appendChild(updateBtn)
+    // appends form to container
+    const container = document.querySelector('.form-container')
+    container.appendChild(form)
+}
+
+const onUpdateFormSubmit = (title, desc, date, select, todoItem) => {
+    editTitle(todoItem, title.value)
+    editDescription(todoItem, desc.value)
+    console.log(date.value)
+    editDueDate(todoItem, date.value)
+    editPriority(todoItem, select.value)
+    displayTasks()
+    console.log(todoItem)
 }
 
 const deleteTodo = () => {
@@ -238,6 +344,7 @@ const createTaskForm = () => {
 
     // creates cancel button
     const cancelBtn = document.createElement('button')
+    cancelBtn.id = 'cancel-btn'
     cancelBtn.type = 'button'
     cancelBtn.textContent = 'Cancel'
     cancelBtn.addEventListener('click', cancelTodo)
@@ -245,6 +352,7 @@ const createTaskForm = () => {
 
     // creates submit button
     const submitBtn = document.createElement('button')
+    submitBtn.id = 'submit-btn'
     submitBtn.type = 'submit'
     submitBtn.textContent = 'Create task'
     submitBtn.addEventListener('click', onTaskFormSubmit)
