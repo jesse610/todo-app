@@ -150,8 +150,11 @@ const editDueDate = (todoItem, newDate) => {
         return logger('Todo item does not exist!')
     }
     else
-    {
-        return project[todoItem].dueDate = newDate
+    {   
+        let formattedDate = formatDate(newDate)
+        console.log(formattedDate)
+        let reformat = format(new Date(`${formattedDate}`), 'MM/dd/yyyy')
+        return todoItem.dueDate = reformat
     }
 }
 
@@ -163,7 +166,7 @@ const editTitle = (todoItem, newTitle) => {
     }
     else
     {
-        return project[todoItem].title = newTitle
+        return todoItem.title = newTitle
     }
 }
 
@@ -174,8 +177,8 @@ const editDescription = (todoItem, newDesc) => {
         return logger('Todo item does not exist!')
     }
     else
-    {
-        return project[todoItem].description = newDesc
+    {   
+        return todoItem.description = newDesc
     }
 }
 
@@ -187,7 +190,7 @@ const editPriority = (todoItem, newPriority) => {
     }
     else
     {
-        return project[todoItem].priority = newPriority
+        return todoItem.priority = newPriority
     }
 }
 
