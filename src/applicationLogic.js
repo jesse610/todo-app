@@ -215,11 +215,87 @@ const editProjectName = (oldProjectName, newProjectName) => {
     }
 }
 
+
+// sort functionality
+// -- refactor this messy code
 const sortTodos = (timeFrame) => {
     if (timeFrame == 'today')
     {
-        
+        let today = new Date()
+        let formattedDate = format(today, 'MM/dd/yyyy')
+        today = new Date(formattedDate)
+        return createSortedObj(timeFrame, today)
     }
+    else if(timeFrame == 'week')
+    {   
+        let today = new Date()
+        let formattedToday = format(today, 'MM/dd/yyyy')
+        today = new Date(formattedToday)
+        console.log(today.getTime())
+
+        let week = new Date()
+        week.setDate(week.getDate() + 7)
+        let formattedWeek = format(week, 'MM/dd/yyyy')
+        week = new Date(formattedWeek)
+        return createSortedObj(timeFrame, today, week)
+    }
+    else if(timeFrame == 'month')
+    {
+        let today = new Date()
+        let formattedToday = format(today, 'MM/dd/yyyy')
+        today = new Date(formattedToday)
+        console.log(today.getTime())
+
+        let month = new Date()
+        month.setMonth(month.getMonth() + 1)
+        let formattedMonth = format(month, 'MM/dd/yyyy')
+        month = new Date(formattedMonth)
+        console.log(month)
+        return createSortedObj(timeFrame, today, month)
+    }
+}
+
+const createSortedObj = (timeframe, date, dates = null) => {
+    let sorted = {}
+
+    for(const i in projects)
+        {   
+            sorted[i] = []
+            for(let j = 0; j < projects[i].length; j++)
+            {
+                for(const keys in projects[i][j])
+                {
+                    if (keys == 'dueDate' && timeframe == 'today')
+                    {
+                        let dueDate = new Date(projects[i][j][keys])
+                        dueDate = dueDate.getTime()
+
+                        if (dueDate == date.getTime())
+                        {
+                            sorted[i].push(projects[i][j])
+                            console.log(sorted)
+                        }
+                    }
+                    else if (keys == 'dueDate' && timeframe == 'week' || timeframe == 'month')
+                    {
+                        let dueDate = new Date(projects[i][j][keys])
+                        dueDate = dueDate.getTime()
+
+                        if (dueDate >= date.getTime() && dueDate <= dates.getTime())
+                        {
+                            sorted[i].push(projects[i][j])
+                            console.log(sorted)
+                        }
+                    }
+                }
+            }
+
+            if (sorted[i].length == 0)
+            {
+                delete sorted[i]
+            }
+        }
+    return sorted
 }
 
 export {
@@ -237,5 +313,6 @@ export {
     currentActiveProject,
     markTodoItemComplete,
     markTodoItemNotComplete,
-    formatDate
+    formatDate,
+    sortTodos
 }
