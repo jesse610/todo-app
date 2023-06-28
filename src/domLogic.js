@@ -1,5 +1,5 @@
 
-import { projects, currentActiveProject, setProject, createTodoItem, createProject, removeProject, markTodoItemComplete, markTodoItemNotComplete, formatDate, editTitle, editDescription, editDueDate, editPriority } from "./applicationLogic";
+import { projects, currentActiveProject, setProject, createTodoItem, createProject, removeProject, markTodoItemComplete, markTodoItemNotComplete, formatDate, editTitle, editDescription, editDueDate, editPriority, removeTodoItem } from "./applicationLogic";
 import format from "date-fns/format";
 import './style.css'
 import { parse, parseISO } from "date-fns";
@@ -158,7 +158,9 @@ const createDeleteBtn = (todoItem) => {
     const deleteBtn = document.createElement('button')
     deleteBtn.type = 'button'
     deleteBtn.textContent = 'delete'
-    deleteBtn.addEventListener('click', deleteTodo)
+    deleteBtn.addEventListener('click', () => {
+        deleteTodo(todoItem)
+    })
     return deleteBtn
 }
 
@@ -243,7 +245,7 @@ const createUpdateForm = (todoItem) => {
     })
     form.appendChild(cancelBtn)
 
-    // creates submit button
+    // creates update button
     const updateBtn = document.createElement('button')
     updateBtn.id = 'update-btn'
     updateBtn.type = 'submit'
@@ -258,20 +260,22 @@ const createUpdateForm = (todoItem) => {
     container.appendChild(form)
 }
 
+// updates todos with edits
 const onUpdateFormSubmit = (title, desc, date, select, todoItem) => {
     editTitle(todoItem, title.value)
     editDescription(todoItem, desc.value)
-    console.log(date.value)
     editDueDate(todoItem, date.value)
     editPriority(todoItem, select.value)
     displayTasks()
-    console.log(todoItem)
 }
 
-const deleteTodo = () => {
-
+// deletes todo item
+const deleteTodo = (todoItem) => {
+    removeTodoItem(currentActiveProject, todoItem)
+    displayTasks()
 }
 
+// displays task form
 const displayTaskForm = () => {
     const addTaskBtn = document.querySelector('#add-task-btn')
     addTaskBtn.addEventListener('click', function() {
