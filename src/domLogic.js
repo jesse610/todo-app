@@ -13,7 +13,7 @@ const displayProjects = () => {
         let li = createProjectListItem(names)
         projectUl.appendChild(li)
     }
-    displayProjectBtns()
+    displayRemoveProjectBtns()
 }
 
 const createProjectListItem = (name) => {
@@ -469,6 +469,15 @@ const addProject = () => {
         if (projectInputs.length == 0)
         {
             displayProjectForm()
+            const inputField = document.querySelector('#project-name-input')
+            const form = document.querySelector('#project-name-form')
+            document.addEventListener('click', function(event) {
+                if (!form.contains(event.target) && event.target !== inputField) 
+                {
+                    inputField.remove()
+                    form.remove()
+                }
+            })
             e.stopPropagation()
         }
     })
@@ -498,14 +507,6 @@ const displayProjectForm = () => {
     input.focus()
 
     // removes input if not clicked on 
-    const inputField = document.querySelector('#project-name-input')
-
-    document.addEventListener('click', function(event) {
-        if (!form.contains(event.target) && event.target !== inputField) {
-            inputField.remove()
-            form.remove()
-        }
-    })
 }
 
 const onProjectSubmit = (e) => {
@@ -538,14 +539,13 @@ const projectLogger = (text) => {
     }, 3000)
 }
 
-const displayProjectBtns = () => {
+const displayRemoveProjectBtns = () => {
     const displayedProjects = document.querySelectorAll('.project-items > li')
     displayedProjects.forEach(project => {
         console.log(project.textContent)
         if (project.textContent != 'DEFAULT' && project.querySelector('button') === null)
         {
             addRemoveProjectBtn(project)
-            addEditProjectBtn(project)
         }
     })
 }
@@ -555,14 +555,6 @@ const addRemoveProjectBtn = (project) => {
     project.appendChild(deleteBtn)
     deleteBtn.addEventListener('click', () => {
         deleteProject(project)
-    })
-}
-
-const addEditProjectBtn = (project) => {
-    let editBtn = createEditProjectBtn()
-    project.appendChild(deleteBtn)
-    deleteBtn.addEventListener('click', () => {
-        editProjectNameProject(project)
     })
 }
 
