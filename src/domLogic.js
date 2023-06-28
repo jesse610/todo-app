@@ -88,6 +88,14 @@ const createLiTodoItem = (todoItem) => {
             li.appendChild(span)
         }
     }
+
+    for (let i = 0; i < 1; i++)
+    {
+        let editBtn = createEditBtn(todoItem)
+        let deleteBtn = createDeleteBtn(todoItem)
+        li.appendChild(editBtn)
+        li.appendChild(deleteBtn)
+    }
     return li
 }
 
@@ -132,6 +140,30 @@ const createTodoSpan = (todoItemValue) => {
     let span = document.createElement('span')
     span.textContent = todoItemValue
     return span
+}
+
+const createEditBtn = (todoItem) => {
+    const editBtn = document.createElement('button')
+    editBtn.type = 'button'
+    editBtn.textContent = 'edit'
+    editBtn.addEventListener('click', populateEditForm)
+    return editBtn
+}
+
+const createDeleteBtn = (todoItem) => {
+    const deleteBtn = document.createElement('button')
+    deleteBtn.type = 'button'
+    deleteBtn.textContent = 'delete'
+    deleteBtn.addEventListener('click', deleteTodo)
+    return deleteBtn
+}
+
+const populateEditForm = () => {
+
+}
+
+const deleteTodo = () => {
+
 }
 
 const displayTaskForm = () => {
