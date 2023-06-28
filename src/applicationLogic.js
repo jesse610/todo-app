@@ -130,14 +130,15 @@ const logger = (message) => {
 }
 
 // removes todo item
-const removeTodoItem = (project = currentActiveProject, todoItem) => {
+const removeTodoItem = (todoItem, project = currentActiveProject) => {
     if (todoItem < 0 || todoItem > projects[project].length - 1)
     {
         return logger('Todo item does not exist!')
     }
     else
     {
-        projects[project].splice(todoItem, 1)
+        projects[project].splice(projects[project].indexOf(todoItem), 1)
+        console.log(projects)
         return projects[project]
     }
 }
@@ -273,7 +274,6 @@ const createSortedObj = (timeframe, date, dates = null) => {
                         if (dueDate == date.getTime())
                         {
                             sorted[i].push(projects[i][j])
-                            console.log(sorted)
                         }
                     }
                     else if (keys == 'dueDate' && timeframe == 'week' || timeframe == 'month')
@@ -284,7 +284,6 @@ const createSortedObj = (timeframe, date, dates = null) => {
                         if (dueDate >= date.getTime() && dueDate <= dates.getTime())
                         {
                             sorted[i].push(projects[i][j])
-                            console.log(sorted)
                         }
                     }
                 }
@@ -294,7 +293,7 @@ const createSortedObj = (timeframe, date, dates = null) => {
             {
                 delete sorted[i]
             }
-        }
+        }   
     return sorted
 }
 
