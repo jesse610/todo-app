@@ -1,5 +1,5 @@
 
-import { projects, currentActiveProject, setProject, createTodoItem, createProject, removeProject, markTodoItemComplete, markTodoItemNotComplete, formatDate, editTitle, editDescription, editDueDate, editPriority, removeTodoItem } from "./applicationLogic";
+import { projects, currentActiveProject, setProject, createTodoItem, createProject, removeProject, markTodoItemComplete, markTodoItemNotComplete, formatDate, editTitle, editDescription, editDueDate, editPriority, removeTodoItem, sortTodos, editProjectName } from "./applicationLogic";
 import format from "date-fns/format";
 import './style.css'
 import { parse, parseISO } from "date-fns";
@@ -13,7 +13,7 @@ const displayProjects = () => {
         let li = createProjectListItem(names)
         projectUl.appendChild(li)
     }
-    displayRemoveProjectBtns()
+    displayProjectBtns()
 }
 
 const createProjectListItem = (name) => {
@@ -40,6 +40,10 @@ const handleProjectLinkClick = (projectName) => {
     updateTaskHeading()
     hideAddTaskButton(false)
     hideAddTaskForm(true)
+    if (document.querySelector('#update-form') != null)
+    {
+        removeUpdateTaskForm()
+    }
 }
 
 const hideAddTaskButton = (tf) => {
@@ -56,26 +60,28 @@ const hideAddTaskForm = (tf) => {
     }
 }
 
-const updateTaskHeading = () => {
+const updateTaskHeading = (name = currentActiveProject) => {
     const h2 = document.querySelector('.task-container > div > h2')
-    h2.textContent =  `Tasks: ${currentActiveProject}`
+    h2.textContent =  `Tasks: ${name}`
 }
 
-const displayTasks = () => {
+const displayTasks = (type, items) => {
     const projectTodos = projects[currentActiveProject]
-    const taskItemsUl = document.querySelector('.task-items')
+    console.log(currentActiveProject)
+    const taskItemsUl = document.querySelector('#task-items')
+    taskItemsUl.className = 'default-task-items'
     taskItemsUl.textContent = ''
     console.log(projectTodos)
     
     for (const i in projectTodos)
     {
-        let li = createLiTodoItem(projectTodos[i])
+        let li = createLiTodoItem(projectTodos[i], currentActiveProject)
         taskItemsUl.appendChild(li)
     }
 }
 
 
-const createLiTodoItem = (todoItem) => {
+const createLiTodoItem = (todoItem, project, timeframe) => {
     let li = document.createElement('li')
     for (const keys in todoItem)
     {  
@@ -93,8 +99,8 @@ const createLiTodoItem = (todoItem) => {
 
     for (let i = 0; i < 1; i++)
     {
-        let editBtn = createEditBtn(todoItem)
-        let deleteBtn = createDeleteBtn(todoItem)
+        let editBtn = createEditBtn(todoItem, timeframe)
+        let deleteBtn = createDeleteBtn(todoItem, project, timeframe)
         li.appendChild(editBtn)
         li.appendChild(deleteBtn)
     }
@@ -144,32 +150,32 @@ const createTodoSpan = (todoItemValue) => {
     return span
 }
 
-const createEditBtn = (todoItem) => {
+const createEditBtn = (todoItem, timeframe) => {
     const editBtn = document.createElement('button')
     editBtn.type = 'button'
     editBtn.textContent = 'edit'
     editBtn.addEventListener('click', () => {
-        populateEditForm(todoItem)
+        populateEditForm(todoItem, timeframe)
         hideAddTaskButton(true)
     })
     return editBtn
 }
 
-const createDeleteBtn = (todoItem) => {
+const createDeleteBtn = (todoItem, project, timeframe) => {
     const deleteBtn = document.createElement('button')
     deleteBtn.type = 'button'
     deleteBtn.textContent = 'delete'
     deleteBtn.addEventListener('click', () => {
-        deleteTodo(todoItem)
+        deleteTodo(todoItem, project, timeframe)
     })
     return deleteBtn
 }
 
-const populateEditForm = (todoItem) => {
-    const updateForm = createUpdateForm(todoItem)
+const populateEditForm = (todoItem, timeframe) => {
+    const updateForm = createUpdateForm(todoItem, timeframe)
 }
 
-const createUpdateForm = (todoItem) => {
+const createUpdateForm = (todoItem, timeframe) => {
     const form = document.createElement('form')
     form.action = '#'
     form.id = 'update-form'
@@ -253,7 +259,7 @@ const createUpdateForm = (todoItem) => {
     updateBtn.textContent = 'Update task'
     updateBtn.addEventListener('click', (e) => {
         e.preventDefault()
-        onUpdateFormSubmit(title, desc, date, select, todoItem)
+        onUpdateFormSubmit(title, desc, date, select, todoItem, timeframe)
     })
     form.appendChild(updateBtn)
     // appends form to container
@@ -262,14 +268,14 @@ const createUpdateForm = (todoItem) => {
 }
 
 // updates todos with edits
-const onUpdateFormSubmit = (title, desc, date, select, todoItem) => {
+const onUpdateFormSubmit = (title, desc, date, select, todoItem, timeframe) => {
     editTitle(todoItem, title.value)
     editDescription(todoItem, desc.value)
     editDueDate(todoItem, date.value)
     editPriority(todoItem, select.value)
     removeUpdateTaskForm()
     hideAddTaskButton(false)
-    displayTasks()
+    updateDisplay(timeframe)
 }
 
 const removeUpdateTaskForm = () => {
@@ -278,9 +284,22 @@ const removeUpdateTaskForm = () => {
 }
 
 // deletes todo item
-const deleteTodo = (todoItem) => {
-    removeTodoItem(currentActiveProject, todoItem)
-    displayTasks()
+const deleteTodo = (todoItem, project, timeframe) => {
+    removeTodoItem(todoItem, project)
+    updateDisplay(timeframe)
+}
+
+const updateDisplay = (timeframe) => {
+    const sortedTaskItems = document.querySelector('.sorted-task-items')
+    if (sortedTaskItems != null)
+    {
+        createSortedDisplay(timeframe)
+    }
+    else
+    {
+        displayTasks()
+    }
+
 }
 
 // displays task form
@@ -519,13 +538,14 @@ const projectLogger = (text) => {
     }, 3000)
 }
 
-const displayRemoveProjectBtns = () => {
+const displayProjectBtns = () => {
     const displayedProjects = document.querySelectorAll('.project-items > li')
     displayedProjects.forEach(project => {
         console.log(project.textContent)
         if (project.textContent != 'DEFAULT' && project.querySelector('button') === null)
         {
             addRemoveProjectBtn(project)
+            addEditProjectBtn(project)
         }
     })
 }
@@ -535,6 +555,14 @@ const addRemoveProjectBtn = (project) => {
     project.appendChild(deleteBtn)
     deleteBtn.addEventListener('click', () => {
         deleteProject(project)
+    })
+}
+
+const addEditProjectBtn = (project) => {
+    let editBtn = createEditProjectBtn()
+    project.appendChild(deleteBtn)
+    deleteBtn.addEventListener('click', () => {
+        editProjectNameProject(project)
     })
 }
 
@@ -556,11 +584,42 @@ const deleteProject = (project) => {
     hideAddTaskButton(false)
 }
 
+const createSortedDisplay = (timeFrame) => {
+    const sortedTodos = sortTodos(timeFrame)
+    console.log(sortedTodos)
+    const taskItemsUl = document.querySelector('#task-items')
+    taskItemsUl.className = 'sorted-task-items'
+    taskItemsUl.textContent = ''
+    
+    for (const key in sortedTodos)
+    {   
+        for(const todo in sortedTodos[key])
+        {
+            let li = createLiTodoItem(sortedTodos[key][todo], key, timeFrame)
+            taskItemsUl.appendChild(li)
+        }
+    }
+}
+
+const displaySorted = () => {
+    const sortTimeframes = document.querySelectorAll('.sort-timeframe')
+    console.log(sortTimeframes)
+    sortTimeframes.forEach(timeframe => {
+        timeframe.addEventListener('click', () => {
+            createSortedDisplay(timeframe.textContent.toLowerCase())
+            updateTaskHeading(timeframe.textContent)
+            hideAddTaskButton(true)
+            hideAddTaskForm(true)
+        })
+    })
+}
+
 export {
     displayProjects,
     displayTasks,
     displayTaskForm,
     addProject,
     projectLogger,
-    displayRemoveProjectBtns
+    displayRemoveProjectBtns,
+    displaySorted
 }
