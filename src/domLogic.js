@@ -150,6 +150,7 @@ const createEditBtn = (todoItem) => {
     editBtn.textContent = 'edit'
     editBtn.addEventListener('click', () => {
         populateEditForm(todoItem)
+        hideAddTaskButton(true)
     })
     return editBtn
 }
@@ -266,7 +267,14 @@ const onUpdateFormSubmit = (title, desc, date, select, todoItem) => {
     editDescription(todoItem, desc.value)
     editDueDate(todoItem, date.value)
     editPriority(todoItem, select.value)
+    removeUpdateTaskForm()
+    hideAddTaskButton(false)
     displayTasks()
+}
+
+const removeUpdateTaskForm = () => {
+    const updateForm = document.querySelector('#update-form')
+    updateForm.remove()
 }
 
 // deletes todo item
