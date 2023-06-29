@@ -211,10 +211,14 @@ const editProjectName = (oldProjectName, newProjectName) => {
     }
     else
     {
-        delete Object.assign(projects, {[newProjectName]: projects[oldProjectName.toUpperCase()]})[oldProjectName]
+        // delete Object.assign(projects, {[newProjectName]: projects[oldProjectName.toUpperCase()]})[oldProjectName]
+        const arrValue = projects[oldProjectName]
+        projects[newProjectName] = arrValue
+        delete projects[oldProjectName]
         return projects
-    }
+    };
 }
+
 
 
 // sort functionality

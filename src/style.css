@@ -152,3 +152,17 @@ ul > li > a {
     height: 50px;
     align-items: center;
 }
+
+#update-form,
+#task-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+#update-form > div > input,
+#update-form > div > select {
+    width: 225px;
+    height: 30px;
+}

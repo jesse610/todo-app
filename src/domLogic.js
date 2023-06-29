@@ -40,6 +40,7 @@ const handleProjectLinkClick = (projectName) => {
     updateTaskHeading()
     hideAddTaskButton(false)
     hideAddTaskForm(true)
+    unhideTasks()
     if (document.querySelector('#update-form') != null)
     {
         removeUpdateTaskForm()
@@ -157,6 +158,7 @@ const createEditBtn = (todoItem, timeframe) => {
     editBtn.addEventListener('click', () => {
         populateEditForm(todoItem, timeframe)
         hideAddTaskButton(true)
+        hideTasks()
     })
     return editBtn
 }
@@ -181,24 +183,29 @@ const createUpdateForm = (todoItem, timeframe) => {
     form.id = 'update-form'
     
     // updates title input
+    const titleDiv = document.createElement('div')
     const title = document.createElement('input')
     title.type = 'text'
     title.name = 'title'
     title.autocomplete = "off"
     title.id = 'title-update'
     title.value = todoItem.title
-    form.appendChild(title)
+    titleDiv.appendChild(title)
+    form.appendChild(titleDiv)
 
     // updates description input
+    const descDiv = document.createElement('div')
     const desc = document.createElement('input')
     desc.type = 'text'
     desc.name = 'description'
     desc.autocomplete = "off"
     desc.id = 'description-update'
     desc.value = todoItem.description
-    form.appendChild(desc)
+    descDiv.appendChild(desc)
+    form.appendChild(descDiv)
 
     // updates date input
+    const dateDiv = document.createElement('div')
     const date = document.createElement('input')
     date.type = 'date'
     date.name = 'deadline'
@@ -207,14 +214,17 @@ const createUpdateForm = (todoItem, timeframe) => {
     const parsedDate = parse(day, 'MM/dd/yyyy', new Date())
     const formattedDate = format(parsedDate, "yyyy-MM-dd")
     date.value = formattedDate
-    form.appendChild(date)
+    dateDiv.appendChild(date)
+    form.appendChild(dateDiv)
 
     // creates select 
+    const selectDiv = document.createElement('div')
     const select = document.createElement('select')
     select.name = 'priority'
     select.id = 'priority-update'
     console.log(select)
-    form.appendChild(select)
+    selectDiv.appendChild(select)
+    form.appendChild(selectDiv)
 
     // creates disabled option
     const option1 = document.createElement('option')
@@ -249,6 +259,7 @@ const createUpdateForm = (todoItem, timeframe) => {
     cancelBtn.textContent = 'Cancel'
     cancelBtn.addEventListener('click', () => {
         document.querySelector('#update-form').remove()
+        unhideTasks()
     })
     form.appendChild(cancelBtn)
 
@@ -276,11 +287,14 @@ const onUpdateFormSubmit = (title, desc, date, select, todoItem, timeframe) => {
     removeUpdateTaskForm()
     hideAddTaskButton(false)
     updateDisplay(timeframe)
+    unhideTasks()
 }
 
 const removeUpdateTaskForm = () => {
     const updateForm = document.querySelector('#update-form')
-    updateForm.remove()
+    if (updateForm != null) {
+        return updateForm.remove()
+    }
 }
 
 // deletes todo item
@@ -521,7 +535,7 @@ const displayProjectForm = (project) => {
         project.querySelector('input').value = name
         form.addEventListener('submit', function(e) {
             e.preventDefault()
-            const newName = input.value.trim()
+            const newName = input.value.trim().toUpperCase()
             let projectNames = currentProjects()
             if (newName == '')
             {
@@ -619,8 +633,18 @@ const addRemoveProjectBtn = (project) => {
 const addEditProjectBtn = (project) => {
     let editBtn = createEditProjectBtn()
     project.appendChild(editBtn)
-    editBtn.addEventListener('click', () => {
-        editProject(project) 
+    editBtn.addEventListener('click', (e) => {
+        editProject(project)
+        // fix below causing issues with updating name twice
+        // const inputField = document.querySelector('#project-name-input')
+        // const form = document.querySelector('#project-name-form')
+        // document.addEventListener('click', function(event) {
+        //     if (!form.contains(event.target) && event.target !== inputField) 
+        //     {
+        //         displayProjects()
+        //     }
+        // })
+        // e.stopPropagation() 
     })
 }
 
@@ -680,6 +704,9 @@ const displaySorted = () => {
             updateTaskHeading(timeframe.textContent)
             hideAddTaskButton(true)
             hideAddTaskForm(true)
+            unhideTasks()
+
+            removeUpdateTaskForm()
         })
     })
 }
