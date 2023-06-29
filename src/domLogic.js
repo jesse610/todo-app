@@ -1,5 +1,5 @@
 
-import { projects, currentActiveProject, setProject, createTodoItem, createProject, removeProject, markTodoItemComplete, markTodoItemNotComplete, formatDate, editTitle, editDescription, editDueDate, editPriority, removeTodoItem, sortTodos, editProjectName, currentProjects } from "./applicationLogic";
+import { projects, currentActiveProject, setProject, createTodoItem, createProject, removeProject, markTodoItemComplete, markTodoItemNotComplete, formatDate, editTitle, editDescription, editDueDate, editPriority, removeTodoItem, sortTodos, editProjectName, currentProjects, getCurrentProject } from "./applicationLogic";
 import format from "date-fns/format";
 // import './style.css'
 import { parse, parseISO } from "date-fns";
@@ -9,8 +9,8 @@ const displayProjects = () => {
     const h2 = document.querySelector('.task-container > div > h2')
     projectUl.textContent = ''
 
-    for (const names in projects) {
-        let li = createProjectListItem(names)
+    for (let i = 0; i < projects.length; i++) {
+        let li = createProjectListItem(projects[i].name)
         projectUl.appendChild(li)
     }
     displayProjectBtns()
@@ -66,15 +66,17 @@ const updateTaskHeading = (name = currentActiveProject) => {
     h2.textContent =  `Tasks: ${name}`
 }
 
-const displayTasks = (type, items) => {
-    const projectTodos = projects[currentActiveProject]
-    console.log(currentActiveProject)
+const displayTasks = () => {
+    const project = getCurrentProject()
+    console.log('current project:')
+    console.log(project)
+    const projectTodos = project.tasks
     const taskItemsUl = document.querySelector('#task-items')
     taskItemsUl.className = 'default-task-items'
     taskItemsUl.textContent = ''
     console.log(projectTodos)
     
-    for (const i in projectTodos)
+    for (let i = 0; i < projectTodos.length; i++)
     {
         let li = createLiTodoItem(projectTodos[i], currentActiveProject)
         taskItemsUl.appendChild(li)
@@ -298,8 +300,12 @@ const removeUpdateTaskForm = () => {
 }
 
 // deletes todo item
-const deleteTodo = (todoItem, project, timeframe) => {
-    removeTodoItem(todoItem, project)
+const deleteTodo = (todoItem, projectName, timeframe) => {
+    const project = getCurrentProject()
+    const getIndexOfProject = projects.indexOf(project)
+    const getIndexOfTodoItem = project.tasks.indexOf(todoItem)
+    console.log(getIndexOfTodoItem)
+    removeTodoItem(getIndexOfTodoItem, getIndexOfProject)
     updateDisplay(timeframe)
 }
 
