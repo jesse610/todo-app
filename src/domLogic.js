@@ -13,7 +13,7 @@ const displayProjects = () => {
         let li = createProjectListItem(names)
         projectUl.appendChild(li)
     }
-    displayRemoveProjectBtns()
+    displayProjectBtns()
 }
 
 const createProjectListItem = (name) => {
@@ -483,7 +483,7 @@ const addProject = () => {
     })
 }
 
-const displayProjectForm = () => {
+const displayProjectForm = (project) => {
     const taskItemsUI = document.querySelector('.project-items')
 
     const form = document.createElement('form')
@@ -499,14 +499,29 @@ const displayProjectForm = () => {
     input2.type = 'submit'
     input2.hidden = true
     form.appendChild(input2)
-    form.addEventListener('submit', function(e) {
-        onProjectSubmit(e)
-    })
 
-    taskItemsUI.appendChild(form)
+    if (project)
+    {
+        let name = project.querySelector('a').textContent
+        project.textContent = ''
+        project.appendChild(form)
+        project.querySelector('input').value = name
+        form.addEventListener('submit', function(e) {
+            e.preventDefault()
+            const newName = input.value
+            editProjectName(name, newName)
+            displayProjects()
+            console.log(projects)
+        })
+    }
+    else
+    {
+        form.addEventListener('submit', function(e) {
+            onProjectSubmit(e)
+        })
+        taskItemsUI.appendChild(form)
+    }
     input.focus()
-
-    // removes input if not clicked on 
 }
 
 const onProjectSubmit = (e) => {
@@ -539,12 +554,13 @@ const projectLogger = (text) => {
     }, 3000)
 }
 
-const displayRemoveProjectBtns = () => {
+const displayProjectBtns = () => {
     const displayedProjects = document.querySelectorAll('.project-items > li')
     displayedProjects.forEach(project => {
         console.log(project.textContent)
         if (project.textContent != 'DEFAULT' && project.querySelector('button') === null)
         {
+            addEditProjectBtn(project)
             addRemoveProjectBtn(project)
         }
     })
@@ -556,6 +572,26 @@ const addRemoveProjectBtn = (project) => {
     deleteBtn.addEventListener('click', () => {
         deleteProject(project)
     })
+}
+
+const addEditProjectBtn = (project) => {
+    let editBtn = createEditProjectBtn()
+    project.appendChild(editBtn)
+    editBtn.addEventListener('click', () => {
+        editProject(project) 
+    })
+}
+
+const createEditProjectBtn = () => {
+    let editBtn = document.createElement('button')
+    editBtn.textContent = 'Edit'
+    editBtn.type = 'button'
+    return editBtn
+}
+
+const editProject = (project) => {
+    console.log('edit')
+    displayProjectForm(project)
 }
 
 const createRemoveProjectBtn = () => {
@@ -612,6 +648,6 @@ export {
     displayTaskForm,
     addProject,
     projectLogger,
-    displayRemoveProjectBtns,
+    displayProjectBtns,
     displaySorted
 }
