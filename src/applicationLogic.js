@@ -4,9 +4,12 @@ import { utcToZonedTime, zonedTimeToUtc } from "date-fns-tz";
 
 let currentActiveProject = 'DEFAULT'
 
-const projects = {
-    'DEFAULT' : [],
-}
+const projects = [
+    {
+        name: 'DEFAULT', 
+        tasks: [],
+    },
+]
 
 // todo factory function
 function TodoItem (title, description, dueDate, priority) {
@@ -38,8 +41,10 @@ const createProject = (projectName) => {
         projectLogger('Project name already exists!')
     }
     else
-    {
-        projects[projectName] = []
+    {   
+        const newProject = {name: projectName, tasks: []}
+        projects.push(newProject)
+        console.log(projects)
         return projects
     }
 }
@@ -69,26 +74,29 @@ const createTodoItem = (title, description, dueDate, priority) => {
 
 // pushes todo item into current active project
 const pushTodoItem = (todoItem) => {
-    projects[currentActiveProject].push(todoItem)
+    const project = getCurrentProject()
+    console.log(project)
+    project.tasks.push(todoItem)
+}
+
+const getCurrentProject = () => {
+    const project = projects.filter(property => property.name == currentActiveProject)
+    return project[0]
 }
 
 // returns list of current project names
 const currentProjects = () => {
-    let projectNamesArr = []
-    for (const names in projects) 
-    {
-        projectNamesArr.push(names.toUpperCase())
-    }
-
-    return projectNamesArr
+    const names = projects.map(property => property.name)
+    console.log(names)
+    return names
 }
 
 // sets current project
 const setProject = (projectName = 'DEFAULT') => {
     projectName = changeToUpperCase(projectName)
-    const projects = currentProjects()
+    const names = currentProjects()
 
-    if (projects.includes(projectName))
+    if (names.includes(projectName))
     {
         currentActiveProject = projectName
         return `${logger(`Set project to: ${currentActiveProject}`)}`
@@ -102,7 +110,9 @@ const setProject = (projectName = 'DEFAULT') => {
 // removes project from project object
 const removeProject = (project) => {
     project = changeToUpperCase(project)
-    if (project == projects[project])
+    const defaultProject = projects[0]
+
+    if (project == defaultProject.name)
     {
         return logger('Cannot delete default project!')
     }
@@ -116,7 +126,8 @@ const removeProject = (project) => {
         {
             setProject()
         }
-        delete projects[project]
+        const index = projects.findIndex(p => p.name == project)
+        projects.splice(index, 1)
     }
     else
     {
@@ -130,23 +141,24 @@ const logger = (message) => {
 }
 
 // removes todo item
-const removeTodoItem = (todoItem, project = currentActiveProject) => {
-    if (todoItem < 0 || todoItem > projects[project].length - 1)
+const removeTodoItem = (todoItemIndex, projectIndex) => {
+    const projectObj = projects[projectIndex]
+    const tasks = projects[projectIndex].tasks
+    if (todoItemIndex < 0 || todoItemIndex > tasks.length - 1)
     {
         return logger('Todo item does not exist!')
     }
     else
     {
-        projects[project].splice(projects[project].indexOf(todoItem), 1)
+        projectObj.tasks.splice(todoItemIndex, 1)
         console.log(projects)
-        return projects[project]
+        return projectObj
     }
 }
 
 // edits todo due date
 const editDueDate = (todoItem, newDate) => {
-    const project = projects[currentActiveProject]
-    if (todoItem < 0 || todoItem > project.length - 1)
+    if (todoItem < 0)
     {
         return logger('Todo item does not exist!')
     }
@@ -160,8 +172,7 @@ const editDueDate = (todoItem, newDate) => {
 }
 
 const editTitle = (todoItem, newTitle) => {
-    const project = projects[currentActiveProject]
-    if (todoItem < 0 || todoItem > project.length - 1)
+    if (todoItem < 0)
     {
         return logger('Todo item does not exist!')
     }
@@ -172,8 +183,7 @@ const editTitle = (todoItem, newTitle) => {
 }
 
 const editDescription = (todoItem, newDesc) => {
-    const project = projects[currentActiveProject]
-    if (todoItem < 0 || todoItem > project.length - 1)
+    if (todoItem < 0)
     {
         return logger('Todo item does not exist!')
     }
@@ -184,8 +194,7 @@ const editDescription = (todoItem, newDesc) => {
 }
 
 const editPriority = (todoItem, newPriority) => {
-    const project = projects[currentActiveProject]
-    if (todoItem < 0 || todoItem > project.length - 1)
+    if (todoItem < 0)
     {
         return logger('Todo item does not exist!')
     }
@@ -197,6 +206,8 @@ const editPriority = (todoItem, newPriority) => {
 
 const editProjectName = (oldProjectName, newProjectName) => {
     let p = currentProjects()
+    oldProjectName = oldProjectName.toUpperCase()
+    newProjectName = newProjectName.toUpperCase()
     if (oldProjectName == 'DEFAULT')
     {
         return logger('Cannot change default project!')
@@ -211,16 +222,14 @@ const editProjectName = (oldProjectName, newProjectName) => {
     }
     else
     {
-        // delete Object.assign(projects, {[newProjectName]: projects[oldProjectName.toUpperCase()]})[oldProjectName]
-        const arrValue = projects[oldProjectName]
-        projects[newProjectName] = arrValue
-        delete projects[oldProjectName]
+        const index = projects.findIndex((project) => project.name === oldProjectName);
+        if (index !== -1)
+        {
+            projects[index].name = newProjectName
+        }
         return projects
     };
 }
-
-
-
 // sort functionality
 // -- refactor this messy code
 const sortTodos = (timeFrame) => {
@@ -261,23 +270,26 @@ const sortTodos = (timeFrame) => {
 }
 
 const createSortedObj = (timeframe, date, dates = null) => {
-    let sorted = {}
+    let sorted = []
 
-    for(const i in projects)
+    for(let i = 0; i < projects.length; i++)
         {   
-            sorted[i] = []
-            for(let j = 0; j < projects[i].length; j++)
+            const newProject = {name: projects[i].name, tasks: []}
+            sorted.push(newProject)
+            for(let j = 0; j < projects[i].tasks.length; j++)
             {
-                for(const keys in projects[i][j])
+                for(const keys in projects[i].tasks[j])
                 {
                     if (keys == 'dueDate' && timeframe == 'today')
                     {
-                        let dueDate = new Date(projects[i][j][keys])
+                        let dueDate = new Date(projects[i].tasks[j][keys])
                         dueDate = dueDate.getTime()
 
                         if (dueDate == date.getTime())
                         {
-                            sorted[i].push(projects[i][j])
+                            console.log(sorted[i].tasks)
+                            sorted[i].tasks.push(projects[i].tasks[j])
+                            console.log(sorted)
                         }
                     }
                     else if (keys == 'dueDate' && timeframe == 'week' || timeframe == 'month')
@@ -287,13 +299,13 @@ const createSortedObj = (timeframe, date, dates = null) => {
 
                         if (dueDate >= date.getTime() && dueDate <= dates.getTime())
                         {
-                            sorted[i].push(projects[i][j])
+                            sorted[i].tasks.push(projects[i].tasks[j])
                         }
                     }
                 }
             }
 
-            if (sorted[i].length == 0)
+            if (sorted[i].tasks.length == 0)
             {
                 delete sorted[i]
             }
@@ -318,5 +330,6 @@ export {
     markTodoItemNotComplete,
     formatDate,
     sortTodos,
-    currentProjects
+    currentProjects,
+    getCurrentProject
 }
