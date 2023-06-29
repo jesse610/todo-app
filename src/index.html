@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300&display=swap" rel="stylesheet">
     <title>Document</title>
 </head>
 <body>
@@ -11,7 +14,7 @@
     </div>
     <div class="main">
         <div class="sidebar">
-            <div>
+            <div class="sort-container">
                 <h2>Sort</h2>
                 <ul>
                     <li><a class="sort-timeframe" href="#">Today</a></li>
@@ -22,16 +25,20 @@
             <div id="project-container">
                 <div class="project-heading">
                     <h2>Projects</h2>
+                    <div>
+                        <button id="add-project-btn">+</button>
+                    </div>
                 </div>
-                <button id="add-project-btn">+</button>
                 <ul class="project-items">
                 </ul>
             </div>
         </div>
         <div class="task-container">
-            <div>
+            <div class="task-heading">
                 <h2>Tasks: DEFAULT</h2>
-                <button id="add-task-btn">Add task</button>
+                <div>
+                    <button id="add-task-btn">Add task</button>
+                </div>
             </div>
             <div class="form-container">
             </div>
