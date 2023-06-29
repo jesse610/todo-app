@@ -3,6 +3,7 @@ import { projects, currentActiveProject, setProject, createTodoItem, createProje
 import format from "date-fns/format";
 // import './style.css'
 import { parse, parseISO } from "date-fns";
+import { createTaskTable } from "./createTable";
 
 const displayProjects = () => {
     let projectUl = document.querySelector('.project-items')
@@ -67,17 +68,37 @@ const updateTaskHeading = (name = currentActiveProject) => {
 
 const displayTasks = (type, items) => {
     const projectTodos = projects[currentActiveProject]
-    console.log(currentActiveProject)
-    const taskItemsUl = document.querySelector('#task-items')
-    taskItemsUl.className = 'default-task-items'
-    taskItemsUl.textContent = ''
-    console.log(projectTodos)
+    const tableContainer = document.querySelector('.tasks')
+    const table = document.querySelector('#task-items')
+    const tableHeader = createTableHeader()
+    table.appendChild(tableHeader)
+    
+    // working on this 
+    const tbody = document.createElement('tbody')
     
     for (const i in projectTodos)
     {
         let li = createLiTodoItem(projectTodos[i], currentActiveProject)
         taskItemsUl.appendChild(li)
     }
+}
+
+const createTableHeader = () => {
+    const tableContainer = document.querySelector('.tasks');
+    const table = document.querySelector('#task-items');
+
+    const thead = document.createElement('thead')
+    const headerRow = document.createElement('tr')
+
+    const headerTitles = ['Completed', 'Title', 'Description', 'Due Date', 'Priority', '', '']
+
+    headerTitles.forEach((title) => {
+        const th = document.createElement('th')
+        th.textContent = title
+        headerRow.appendChild(th)
+    })
+    thead.appendChild(headerRow)
+    return thead
 }
 
 
