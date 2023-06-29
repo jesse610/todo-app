@@ -2,20 +2,153 @@
     box-sizing: border-box;
 }
 
+html {
+    margin: 0;
+    font-size: 15px;
+    font-family: 'rubik';
+    height: 100%;
+}
+
 body {
-    height: 80vh;
+    margin: 0;
+    display: grid;
+    grid-template-columns: auto 1fr; /* Set column widths */
+    grid-template-rows: auto 1fr;
+    min-height: 100vh;
+}
+
+button {
+    font-family: 'rubik';
+}
+
+.header {
+    padding: 10px;
+    background-color: #e4e4e7;
+    box-shadow: 0px 2px 15px -5px rgba(0,0,0,0.76);
+    grid-column: 1 / span 2;
+}
+
+.header > h1 {
+    margin: 0;
+    font-size: 2rem;
+}
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    background-color: #f9fafb;
+}
+
+.sort-container > h2 {
+    font-size: 1.5rem;
+    margin: 0;
+    padding-bottom: 10px;
+}
+
+.sort-container > ul {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.project-heading {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.project-heading > h2 {
+    margin: 0;
+    padding: 10px 5px 10px 0px;
+}
+
+.project-heading > div > button {
+    padding: 2px 5px;
+    border-radius: 1.2rem;
+    border: 1px solid silver;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+ul {
+    margin: 0;
+    padding: 0;
+}
+
+ul > li {
+    list-style-type: none;
+}
+
+ul > li > a {
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 1.2rem;
 }
 
 .main {
+    padding-top: 5px;
     display: grid;
-    grid-template-columns: 300px 1fr;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto 1fr;
+    grid-column: 1 / 3;
+    grid-row: 2 / 3;
     height: 100%;
 }
 
 .sidebar {
-    border: 1px dotted red;
+    grid-column: 1;
+    grid-row: 2 / span 2;
+    padding: 10px;
 }
 
 .error {
     border: 1px solid red;
+}
+
+.project-items {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.project-items > li {
+    display: flex;
+    gap: 10px;
+    color: #94a3b8;
+}
+
+.project-items > li > button {
+    cursor: pointer;
+    border: 1px solid silver;
+}
+
+.task-container {
+    grid-column: 2;
+    grid-row: 2;
+    padding: 10px;
+    background-color: #ffffff;
+}
+
+.task-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.task-heading > div > button {
+    padding: 3px 30px;
+    border: 1px solid silver;
+    font-weight: bold;
+    border-radius: 0.3rem;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+#task-items > li {
+    display: flex;
+    gap: 10px;
+    padding-bottom: 10px;
+    height: 50px;
+    align-items: center;
 }
