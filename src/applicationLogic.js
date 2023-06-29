@@ -294,7 +294,7 @@ const createSortedObj = (timeframe, date, dates = null) => {
                     }
                     else if (keys == 'dueDate' && timeframe == 'week' || timeframe == 'month')
                     {
-                        let dueDate = new Date(projects[i][j][keys])
+                        let dueDate = new Date(projects[i].tasks[j][keys])
                         dueDate = dueDate.getTime()
 
                         if (dueDate >= date.getTime() && dueDate <= dates.getTime())
@@ -305,12 +305,12 @@ const createSortedObj = (timeframe, date, dates = null) => {
                 }
             }
 
-            if (sorted[i].tasks.length == 0)
-            {
-                delete sorted[i]
-            }
-        }   
-    return sorted
+            // if (sorted[i].tasks.length == 0)
+            // {
+            //     sorted.splice(sorted.indexOf(sorted[i].name), 1)
+            // }
+        }
+    return sorted.filter(project => project.tasks.length > 0)
 }
 
 export {
