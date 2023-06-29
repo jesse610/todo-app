@@ -313,5 +313,6 @@ export {
     markTodoItemComplete,
     markTodoItemNotComplete,
     formatDate,
-    sortTodos
+    sortTodos,
+    currentProjects
 }
