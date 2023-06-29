@@ -1,5 +1,5 @@
 
-import { projects, currentActiveProject, setProject, createTodoItem, createProject, removeProject, markTodoItemComplete, markTodoItemNotComplete, formatDate, editTitle, editDescription, editDueDate, editPriority, removeTodoItem, sortTodos, editProjectName } from "./applicationLogic";
+import { projects, currentActiveProject, setProject, createTodoItem, createProject, removeProject, markTodoItemComplete, markTodoItemNotComplete, formatDate, editTitle, editDescription, editDueDate, editPriority, removeTodoItem, sortTodos, editProjectName, currentProjects } from "./applicationLogic";
 import format from "date-fns/format";
 import './style.css'
 import { parse, parseISO } from "date-fns";
@@ -508,33 +508,56 @@ const displayProjectForm = (project) => {
         project.querySelector('input').value = name
         form.addEventListener('submit', function(e) {
             e.preventDefault()
-            const newName = input.value
-            editProjectName(name, newName)
-            displayProjects()
+            const newName = input.value.trim()
+            let projectNames = currentProjects()
+            if (newName == '')
+            {
+                const projectHeading = document.querySelector('.project-heading')
+                let span = createErrorSpan()
+                projectHeading.appendChild(span)
+                projectLogger('Project name cannot be empty!')
+            }
+            else if(projectNames.includes(newName.trim()))
+            {
+                const projectHeading = document.querySelector('.project-heading')
+                let span = createErrorSpan()
+                projectHeading.appendChild(span)
+                projectLogger('Project name already exists!')
+            }
+            else
+            {
+                editProjectName(name, newName)
+                displayProjects()
+            }
             console.log(projects)
         })
     }
     else
     {
         form.addEventListener('submit', function(e) {
-            onProjectSubmit(e)
+            onProjectSubmit(e, input)
         })
         taskItemsUI.appendChild(form)
     }
     input.focus()
 }
 
-const onProjectSubmit = (e) => {
+const onProjectSubmit = (e, input) => {
     e.preventDefault()
     const projectHeading = document.querySelector('.project-heading')
-    const projectName = document.querySelector('#project-name-input')
-    const span = document.createElement('span')
-    span.id = 'error-message'
+    const projectName = input.value.trim().toUpperCase()
+    const span = createErrorSpan()
+    const projectNames = currentProjects()
     projectHeading.appendChild(span)
 
-    if (projectName.value == '')
+
+    if (projectName == '')
     {
         projectLogger('Error! Project name cannot be empty')
+    }
+    else if (projectNames.includes(projectName))
+    {
+        projectLogger('Error! Project with that name already exists')
     }
     else
     {
@@ -552,6 +575,12 @@ const projectLogger = (text) => {
     setTimeout(() => {
         errorMessage.remove()
     }, 3000)
+}
+
+const createErrorSpan = () => {
+    const span = document.createElement('span')
+    span.id = 'error-message'
+    return span
 }
 
 const displayProjectBtns = () => {
