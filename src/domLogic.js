@@ -691,11 +691,11 @@ const createSortedDisplay = (timeFrame) => {
     taskItemsUl.className = 'sorted-task-items'
     taskItemsUl.textContent = ''
     
-    for (const key in sortedTodos)
-    {   
-        for(const todo in sortedTodos[key])
+    for (let i = 0; i < sortedTodos.length; i++)
+    {
+        for(let j = 0; j < sortedTodos[i].tasks.length; j++)
         {
-            let li = createLiTodoItem(sortedTodos[key][todo], key, timeFrame)
+            let li = createLiTodoItem(sortedTodos[i].tasks[j], sortedTodos[i].name, timeFrame)
             taskItemsUl.appendChild(li)
         }
     }
