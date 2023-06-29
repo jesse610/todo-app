@@ -1,7 +1,7 @@
 
 import { projects, currentActiveProject, setProject, createTodoItem, createProject, removeProject, markTodoItemComplete, markTodoItemNotComplete, formatDate, editTitle, editDescription, editDueDate, editPriority, removeTodoItem, sortTodos, editProjectName, currentProjects } from "./applicationLogic";
 import format from "date-fns/format";
-import './style.css'
+// import './style.css'
 import { parse, parseISO } from "date-fns";
 
 const displayProjects = () => {
@@ -308,7 +308,18 @@ const displayTaskForm = () => {
     addTaskBtn.addEventListener('click', function() {
         createTaskForm()
         hideAddTaskButton(true)
+        hideTasks()
     })
+}
+
+const hideTasks = () => {
+    const taskDiv = document.querySelector('.tasks')
+    taskDiv.hidden = true
+}
+
+const unhideTasks = () => {
+    const taskDiv = document.querySelector('.tasks')
+    taskDiv.hidden = false
 }
 
 const createTaskForm = () => {
@@ -398,6 +409,7 @@ const createTaskForm = () => {
 const cancelTodo = () => {
     hideAddTaskButton(false)
     hideAddTaskForm(true)
+    unhideTasks()
 }
 
 // creates todo item
@@ -417,6 +429,7 @@ const onTaskFormSubmit = (e) => {
         resetForm()
         hideAddTaskButton(false)
         hideAddTaskForm(true)
+        unhideTasks()
         console.log(projects)
     }
 }
@@ -561,8 +574,8 @@ const onProjectSubmit = (e, input) => {
     }
     else
     {
-        console.log(projectName.value)
-        createProject(projectName.value)
+        console.log(projectName)
+        createProject(projectName)
         displayProjects()
     }
 }
