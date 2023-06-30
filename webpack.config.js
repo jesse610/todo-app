@@ -7,6 +7,7 @@ module.exports = {
     index: './src/index.js',
     domLogic: './src/domLogic.js',
     applicationLogic: './src/applicationLogic.js',
+    storage: './src/storage.js'
   },
   devtool: 'inline-source-map',
   plugins: [
