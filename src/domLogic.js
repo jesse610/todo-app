@@ -67,47 +67,86 @@ const updateTaskHeading = (name = currentActiveProject) => {
 }
 
 const displayTasks = () => {
+    clearTables()
     const project = getCurrentProject()
     console.log('current project:')
     console.log(project)
+    const tasks = document.querySelector('#tasks')
+    tasks.className = 'project-task-items'
     const projectTodos = project.tasks
-    const taskItemsUl = document.querySelector('#task-items')
-    taskItemsUl.className = 'default-task-items'
-    taskItemsUl.textContent = ''
     console.log(projectTodos)
-    
-    for (let i = 0; i < projectTodos.length; i++)
+
+    if (project.tasks.length != 0)
     {
-        let li = createLiTodoItem(projectTodos[i], currentActiveProject)
-        taskItemsUl.appendChild(li)
+        createTable(project)
     }
 }
 
+const clearTables = () => {
+    const tableContainer = document.querySelector('#tasks');
+    tableContainer.textContent = ''
+}
 
-const createLiTodoItem = (todoItem, project, timeframe) => {
-    let li = document.createElement('li')
-    for (const keys in todoItem)
-    {  
-        if(keys == 'completed')
-        {
-            let checkbox = createTodoCheckbox(todoItem)
-            li.appendChild(checkbox)
-        }
-        else
-        {
-            let span = createTodoSpan(todoItem[keys])
-            li.appendChild(span)
-        }
-    }
+const createTable = (project, timeframe) => {
+    const tableContainer = document.querySelector('#tasks');
+    const table = document.createElement('table')
+    table.className = `table-task-items`;
 
-    for (let i = 0; i < 1; i++)
-    {
-        let editBtn = createEditBtn(todoItem, timeframe)
-        let deleteBtn = createDeleteBtn(todoItem, project, timeframe)
-        li.appendChild(editBtn)
-        li.appendChild(deleteBtn)
-    }
-    return li
+    const tableHead = createTableHead()
+    const tableBody = createTableBody(project, timeframe)
+    table.appendChild(tableHead)
+    table.appendChild(tableBody)
+    tableContainer.appendChild(table)
+}
+
+const createTableHead = () => {
+    const thead = document.createElement('thead');
+    const headerRow = document.createElement('tr');
+
+    const headers = ['Completed', 'Title', 'Description', 'Due Date', 'Priority', '', '']
+    headers.forEach((headerTitles) => {
+        const th = document.createElement('th');
+        th.textContent = headerTitles;
+        headerRow.appendChild(th);
+    });
+    
+    thead.appendChild(headerRow);
+    return thead
+}
+
+const createTableBody = (project, timeframe) => {
+    const projectTasks = project.tasks
+    const tbody = document.createElement('tbody');
+
+    projectTasks.forEach(task => {
+        const row = document.createElement('tr');
+
+        const checkboxCell = document.createElement('td');
+        const checkbox = createTodoCheckbox(task)
+        checkboxCell.appendChild(checkbox);
+        row.appendChild(checkboxCell);
+
+        const taskDetails = [task.title, task.description, task.dueDate, task.priority]
+        taskDetails.forEach((detail) => {
+            const cell = document.createElement('td');
+            cell.textContent = detail;
+            row.appendChild(cell);
+        })
+
+        const editCell = document.createElement('td');
+        const editButton = createEditBtn(task, timeframe)
+        editCell.appendChild(editButton);
+        row.appendChild(editCell);
+
+        const deleteCell = document.createElement('td');
+        const deleteButton = createDeleteBtn(task, project, timeframe)
+        deleteCell.appendChild(deleteButton);
+        row.appendChild(deleteCell);
+
+        tbody.appendChild(row)
+    })
+
+    return tbody
 }
 
 const createTodoCheckbox = (todoItem) => {
@@ -145,12 +184,6 @@ const updateCheckboxDisplay = (todoItem, checkbox) => {
     {
         checkbox.checked = false
     }
-}
-
-const createTodoSpan = (todoItemValue) => {
-    let span = document.createElement('span')
-    span.textContent = todoItemValue
-    return span
 }
 
 const createEditBtn = (todoItem, timeframe) => {
@@ -333,12 +366,12 @@ const displayTaskForm = () => {
 }
 
 const hideTasks = () => {
-    const taskDiv = document.querySelector('.tasks')
+    const taskDiv = document.querySelector('#tasks')
     taskDiv.hidden = true
 }
 
 const unhideTasks = () => {
-    const taskDiv = document.querySelector('.tasks')
+    const taskDiv = document.querySelector('#tasks')
     taskDiv.hidden = false
 }
 
@@ -685,19 +718,23 @@ const deleteProject = (project) => {
 }
 
 const createSortedDisplay = (timeFrame) => {
-    const sortedTodos = sortTodos(timeFrame)
-    console.log(sortedTodos)
-    const taskItemsUl = document.querySelector('#task-items')
-    taskItemsUl.className = 'sorted-task-items'
-    taskItemsUl.textContent = ''
-    
-    for (let i = 0; i < sortedTodos.length; i++)
+    clearTables()
+    const tasks = document.querySelector('#tasks')
+    tasks.className = 'sorted-task-items'
+    const sortedArr = sortTodos(timeFrame)
+    for(let i = 0; i < sortedArr.length; i++)
     {
-        for(let j = 0; j < sortedTodos[i].tasks.length; j++)
-        {
-            let li = createLiTodoItem(sortedTodos[i].tasks[j], sortedTodos[i].name, timeFrame)
-            taskItemsUl.appendChild(li)
-        }
+        createTable(sortedArr[i], timeFrame)
+    }
+
+    const tables = document.querySelectorAll('table')
+
+    for(let i = 0; i < tables.length; i++)
+    {
+        let table = tables[i]
+        let heading = document.createElement('h3')
+        heading.textContent = sortedArr[i].name
+        table.parentNode.insertBefore(heading, table)
     }
 }
 
