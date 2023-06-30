@@ -288,6 +288,8 @@ const createUpdateForm = (todoItem, timeframe) => {
 
     select.value = todoItem.priority.toLowerCase()
     // creates cancel button
+    const buttonDiv = document.createElement('div')
+    buttonDiv.className = 'update-form-btns'
     const cancelBtn = document.createElement('button')
     cancelBtn.id = 'cancel-btn'
     cancelBtn.type = 'button'
@@ -295,8 +297,16 @@ const createUpdateForm = (todoItem, timeframe) => {
     cancelBtn.addEventListener('click', () => {
         document.querySelector('#update-form').remove()
         unhideTasks()
+        if (document.querySelector('.sorted-task-items') == null)
+        {
+            hideAddTaskButton(false)
+        }
+        else
+        {
+            hideAddTaskButton(true)
+        }
     })
-    form.appendChild(cancelBtn)
+    buttonDiv.appendChild(cancelBtn)
 
     // creates update button
     const updateBtn = document.createElement('button')
@@ -307,7 +317,8 @@ const createUpdateForm = (todoItem, timeframe) => {
         e.preventDefault()
         onUpdateFormSubmit(title, desc, date, select, todoItem, timeframe)
     })
-    form.appendChild(updateBtn)
+    buttonDiv.appendChild(updateBtn)
+    form.appendChild(buttonDiv)
     // appends form to container
     const container = document.querySelector('.form-container')
     container.appendChild(form)
@@ -438,12 +449,14 @@ const createTaskForm = () => {
     select.appendChild(option4)
 
     // creates cancel button
+    const buttonDiv = document.createElement('div')
+    buttonDiv.className = 'submit-form-btns'
     const cancelBtn = document.createElement('button')
     cancelBtn.id = 'cancel-btn'
     cancelBtn.type = 'button'
     cancelBtn.textContent = 'Cancel'
     cancelBtn.addEventListener('click', cancelTodo)
-    form.appendChild(cancelBtn)
+    buttonDiv.appendChild(cancelBtn)
 
     // creates submit button
     const submitBtn = document.createElement('button')
@@ -451,7 +464,8 @@ const createTaskForm = () => {
     submitBtn.type = 'submit'
     submitBtn.textContent = 'Create task'
     submitBtn.addEventListener('click', onTaskFormSubmit)
-    form.appendChild(submitBtn)
+    buttonDiv.appendChild(submitBtn)
+    form.appendChild(buttonDiv)
 
     // appends form to container
     const container = document.querySelector('.form-container')
