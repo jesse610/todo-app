@@ -3,6 +3,7 @@ import { projects, currentActiveProject, setProject, createTodoItem, createProje
 import format from "date-fns/format";
 // import './style.css'
 import { parse, parseISO } from "date-fns";
+import { storeLocalStorage } from "./storage";
 
 const displayProjects = () => {
     let projectUl = document.querySelector('.project-items')
@@ -184,6 +185,7 @@ const updateCheckboxDisplay = (todoItem, checkbox) => {
     {
         checkbox.checked = false
     }
+    storeLocalStorage(projects)
 }
 
 const createEditBtn = (todoItem, timeframe) => {
@@ -334,6 +336,7 @@ const onUpdateFormSubmit = (title, desc, date, select, todoItem, timeframe) => {
     hideAddTaskButton(false)
     updateDisplay(timeframe)
     unhideTasks()
+    storeLocalStorage(projects)
 }
 
 const removeUpdateTaskForm = () => {
@@ -345,9 +348,9 @@ const removeUpdateTaskForm = () => {
 
 // deletes todo item
 const deleteTodo = (todoItem, projectName, timeframe) => {
-    const project = getCurrentProject()
-    const getIndexOfProject = projects.indexOf(project)
-    const getIndexOfTodoItem = project.tasks.indexOf(todoItem)
+    // const project = getCurrentProject()
+    const getIndexOfProject = projects.findIndex(projects => projects.name == projectName.name)
+    const getIndexOfTodoItem = projectName.tasks.indexOf(todoItem)
     console.log(getIndexOfTodoItem)
     removeTodoItem(getIndexOfTodoItem, getIndexOfProject)
     updateDisplay(timeframe)
@@ -669,23 +672,27 @@ const displayProjectBtns = () => {
         console.log(project.textContent)
         if (project.textContent != 'DEFAULT' && project.querySelector('button') === null)
         {
-            addEditProjectBtn(project)
-            addRemoveProjectBtn(project)
+            let div = document.createElement('div')
+            addEditProjectBtn(project, div)
+            addRemoveProjectBtn(project, div)
+            project.appendChild(div)
         }
     })
 }
 
-const addRemoveProjectBtn = (project) => {
+const addRemoveProjectBtn = (project, div) => {
     let deleteBtn = createRemoveProjectBtn()
-    project.appendChild(deleteBtn)
+    div.appendChild(deleteBtn)
+    // project.appendChild(deleteBtn)
     deleteBtn.addEventListener('click', () => {
         deleteProject(project)
     })
 }
 
-const addEditProjectBtn = (project) => {
+const addEditProjectBtn = (project, div) => {
     let editBtn = createEditProjectBtn()
-    project.appendChild(editBtn)
+    div.appendChild(editBtn)
+    // project.appendChild(editBtn)
     editBtn.addEventListener('click', (e) => {
         editProject(project)
         // fix below causing issues with updating name twice
