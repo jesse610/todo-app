@@ -162,7 +162,9 @@ ul > li > a {
 }
 
 #update-form > div > input,
-#update-form > div > select {
+#update-form > div > select,
+#task-form > input,
+#task-form > select {
     width: 225px;
     height: 30px;
 }
