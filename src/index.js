@@ -5,6 +5,5 @@ displayProjects()
 displayTasks()
 displayTaskForm()
 addProject()
-displayProjectBtns()
 displaySorted()
 

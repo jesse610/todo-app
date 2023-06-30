@@ -644,7 +644,7 @@ const onProjectSubmit = (e, input) => {
     }
     else
     {
-        console.log(projectName)
+        // console.log(projectName)
         createProject(projectName)
         displayProjects()
     }
@@ -668,8 +668,9 @@ const createErrorSpan = () => {
 
 const displayProjectBtns = () => {
     const displayedProjects = document.querySelectorAll('.project-items > li')
+    console.log(displayedProjects)
     displayedProjects.forEach(project => {
-        console.log(project.textContent)
+        console.log(project)
         if (project.textContent != 'DEFAULT' && project.querySelector('button') === null)
         {
             let div = document.createElement('div')
@@ -694,18 +695,21 @@ const addEditProjectBtn = (project, div) => {
     div.appendChild(editBtn)
     // project.appendChild(editBtn)
     editBtn.addEventListener('click', (e) => {
-        editProject(project)
-        // fix below causing issues with updating name twice
-        // const inputField = document.querySelector('#project-name-input')
-        // const form = document.querySelector('#project-name-form')
-        // document.addEventListener('click', function(event) {
-        //     if (!form.contains(event.target) && event.target !== inputField) 
-        //     {
-        //         displayProjects()
-        //     }
-        // })
-        // e.stopPropagation() 
+        editProject(project, e)
     })
+}
+
+const cancelUpdatingProjectName = (e) => {
+    const inputField = document.querySelector('#project-name-input')
+    const form = document.querySelector('#project-name-form')
+    document.addEventListener('click', function(event) {
+        if (!form.contains(event.target) && event.target !== inputField) 
+        {
+            displayProjects()
+            document.removeEventListener('click')
+        }
+    })
+    e.stopPropagation() 
 }
 
 const createEditProjectBtn = () => {
@@ -715,7 +719,7 @@ const createEditProjectBtn = () => {
     return editBtn
 }
 
-const editProject = (project) => {
+const editProject = (project, e) => {
     console.log('edit')
     displayProjectForm(project)
 }
