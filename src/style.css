@@ -21,6 +21,10 @@ button {
     font-family: 'rubik';
 }
 
+button {
+    border: 1px solid silver;
+}
+
 .header {
     padding: 10px;
     background-color: #e4e4e7;
@@ -167,4 +171,34 @@ ul > li > a {
 #task-form > select {
     width: 225px;
     height: 30px;
+}
+
+.update-form-btns, 
+.submit-form-btns {
+    width: 225px;
+    padding-top: 5px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.update-form-btns > button, 
+.submit-form-btns > button
+{
+    padding: 3px 8px;
+    border-radius: 0.5rem;
+    font-weight: bold;
+}
+
+#update-btn,
+#submit-btn {
+    background-color: #6ee7b7;
+}
+
+#cancel-btn {
+    background-color: #fca5a5;
+}
+
+#tasks > table {
+    margin: 0;
+    border: 0; 
 }
