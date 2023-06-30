@@ -1,15 +1,25 @@
 import { projectLogger } from "./domLogic"
 import format from "date-fns/format"
 import { utcToZonedTime, zonedTimeToUtc } from "date-fns-tz";
+import { storeLocalStorage, retrieveLocalStorage } from "./storage";
 
 let currentActiveProject = 'DEFAULT'
 
-const projects = [
-    {
-        name: 'DEFAULT', 
-        tasks: [],
-    },
-]
+let projects;
+
+if (retrieveLocalStorage())
+{
+    projects = retrieveLocalStorage()
+}
+else
+{
+    projects = [
+        {
+            name: 'DEFAULT', 
+            tasks: [],
+        },
+    ]
+}
 
 // todo factory function
 function TodoItem (title, description, dueDate, priority) {
@@ -44,18 +54,20 @@ const createProject = (projectName) => {
     {   
         const newProject = {name: projectName, tasks: []}
         projects.push(newProject)
-        console.log(projects)
+        storeLocalStorage(projects)
         return projects
     }
 }
 
 const markTodoItemComplete = (todoItem) => {
     todoItem.completed = true
+    storeLocalStorage(projects)
     return todoItem
 }
 
 const markTodoItemNotComplete = (todoItem) => {
     todoItem.completed = false
+    storeLocalStorage(projects)
     return todoItem
 }
 
@@ -77,6 +89,7 @@ const pushTodoItem = (todoItem) => {
     const project = getCurrentProject()
     console.log(project)
     project.tasks.push(todoItem)
+    storeLocalStorage(projects)
 }
 
 const getCurrentProject = () => {
@@ -128,6 +141,7 @@ const removeProject = (project) => {
         }
         const index = projects.findIndex(p => p.name == project)
         projects.splice(index, 1)
+        storeLocalStorage(projects)
     }
     else
     {
@@ -152,6 +166,7 @@ const removeTodoItem = (todoItemIndex, projectIndex) => {
     {
         projectObj.tasks.splice(todoItemIndex, 1)
         console.log(projects)
+        storeLocalStorage(projects)
         return projectObj
     }
 }
@@ -226,6 +241,7 @@ const editProjectName = (oldProjectName, newProjectName) => {
         if (index !== -1)
         {
             projects[index].name = newProjectName
+            storeLocalStorage(projects)
         }
         return projects
     };
